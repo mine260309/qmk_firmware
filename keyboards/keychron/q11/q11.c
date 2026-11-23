@@ -28,6 +28,22 @@ bool dip_switch_update_kb(uint8_t index, bool active) {
 }
 #endif
 
+// 0x7E0B, exposed to VIA as CUSTOM(11)
+#define KC_GLOBE QK_KB_11
+
+bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+    if (!process_record_user(keycode, record)) {
+        return false;
+    }
+    switch (keycode) {
+        case KC_GLOBE:
+            // Consumer Page 0x0C, usage 0x029D: macOS Fn/Globe key
+            host_consumer_send(record->event.pressed ? AC_NEXT_KEYBOARD_LAYOUT_SELECT : 0);
+            return false;
+    }
+    return true;
+}
+
 #if defined(RGB_MATRIX_ENABLE) && defined(CAPS_LOCK_LED_INDEX)
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
